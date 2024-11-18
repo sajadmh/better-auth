@@ -14,7 +14,7 @@ export const getOrgAdapter = (
 	return {
 		findOrganizationBySlug: async (slug: string) => {
 			const organization = await adapter.findOne<Organization>({
-				model: "organization",
+				model: context.tables.organization.modelName,
 				where: [
 					{
 						field: "slug",
@@ -29,7 +29,7 @@ export const getOrgAdapter = (
 			user: User;
 		}) => {
 			const organization = await adapter.create<Organization>({
-				model: "organization",
+				model: context.tables.organization.modelName,
 				data: {
 					...data.organization,
 					metadata: data.organization.metadata
@@ -38,7 +38,7 @@ export const getOrgAdapter = (
 				},
 			});
 			const member = await adapter.create<Member>({
-				model: "member",
+				model: context.tables.member.modelName,
 				data: {
 					id: generateId(),
 					organizationId: organization.id,
@@ -82,7 +82,7 @@ export const getOrgAdapter = (
 				return null;
 			}
 			const member = await adapter.findOne<Member>({
-				model: "member",
+				model: context.tables.member.modelName,
 				where: [
 					{
 						field: "organizationId",
@@ -113,7 +113,7 @@ export const getOrgAdapter = (
 		}) => {
 			const [member, user] = await Promise.all([
 				await adapter.findOne<Member>({
-					model: "member",
+					model: context.tables.member.modelName,
 					where: [
 						{
 							field: "userId",
@@ -150,7 +150,7 @@ export const getOrgAdapter = (
 		},
 		findMemberById: async (memberId: string) => {
 			const member = await adapter.findOne<Member>({
-				model: "member",
+				model: context.tables.member.modelName,
 				where: [
 					{
 						field: "id",
@@ -185,14 +185,14 @@ export const getOrgAdapter = (
 		},
 		createMember: async (data: Member) => {
 			const member = await adapter.create<Member>({
-				model: "member",
+				model: context.tables.member.modelName,
 				data: data,
 			});
 			return member;
 		},
 		updateMember: async (memberId: string, role: string) => {
 			const member = await adapter.update<Member>({
-				model: "member",
+				model: context.tables.member.modelName,
 				where: [
 					{
 						field: "id",
@@ -207,7 +207,7 @@ export const getOrgAdapter = (
 		},
 		deleteMember: async (memberId: string) => {
 			const member = await adapter.delete<Member>({
-				model: "member",
+				model: context.tables.member.modelName,
 				where: [
 					{
 						field: "id",
@@ -222,7 +222,7 @@ export const getOrgAdapter = (
 			data: Partial<Organization>,
 		) => {
 			const organization = await adapter.update<Organization>({
-				model: "organization",
+				model: context.tables.organization.modelName,
 				where: [
 					{
 						field: "id",
@@ -235,7 +235,7 @@ export const getOrgAdapter = (
 		},
 		deleteOrganization: async (organizationId: string) => {
 			await adapter.delete({
-				model: "member",
+				model: context.tables.member.modelName,
 				where: [
 					{
 						field: "organizationId",
@@ -244,7 +244,7 @@ export const getOrgAdapter = (
 				],
 			});
 			await adapter.delete({
-				model: "invitation",
+				model: context.tables.invitation.modelName,
 				where: [
 					{
 						field: "organizationId",
@@ -253,7 +253,7 @@ export const getOrgAdapter = (
 				],
 			});
 			await adapter.delete<Organization>({
-				model: "organization",
+				model: context.tables.organization.modelName,
 				where: [
 					{
 						field: "id",
@@ -283,7 +283,7 @@ export const getOrgAdapter = (
 		},
 		findOrganizationById: async (organizationId: string) => {
 			const organization = await adapter.findOne<Organization>({
-				model: "organization",
+				model: context.tables.organization.modelName,
 				where: [
 					{
 						field: "id",
@@ -299,15 +299,15 @@ export const getOrgAdapter = (
 		findFullOrganization: async (organizationId: string) => {
 			const [org, invitations, members] = await Promise.all([
 				adapter.findOne<Organization>({
-					model: "organization",
+					model: context.tables.organization.modelName,
 					where: [{ field: "id", value: organizationId }],
 				}),
 				adapter.findMany<Invitation>({
-					model: "invitation",
+					model: context.tables.invitation.modelName,
 					where: [{ field: "organizationId", value: organizationId }],
 				}),
 				adapter.findMany<Member>({
-					model: "member",
+					model: context.tables.member.modelName,
 					where: [{ field: "organizationId", value: organizationId }],
 				}),
 			]);
@@ -347,7 +347,7 @@ export const getOrgAdapter = (
 		},
 		listOrganizations: async (userId: string) => {
 			const members = await adapter.findMany<Member>({
-				model: "member",
+				model: context.tables.member.modelName,
 				where: [
 					{
 						field: "userId",
@@ -363,7 +363,7 @@ export const getOrgAdapter = (
 			const organizationIds = members.map((member) => member.organizationId);
 
 			const organizations = await adapter.findMany<Organization>({
-				model: "organization",
+				model: context.tables.organization.modelName,
 				where: [
 					{
 						field: "id",
@@ -391,7 +391,7 @@ export const getOrgAdapter = (
 				options?.invitationExpiresIn || defaultExpiration,
 			);
 			const invite = await adapter.create<Invitation>({
-				model: "invitation",
+				model: context.tables.invitation.modelName,
 				data: {
 					id: generateId(),
 					email: invitation.email,
@@ -407,7 +407,7 @@ export const getOrgAdapter = (
 		},
 		findInvitationById: async (id: string) => {
 			const invitation = await adapter.findOne<Invitation>({
-				model: "invitation",
+				model: context.tables.invitation.modelName,
 				where: [
 					{
 						field: "id",
@@ -422,7 +422,7 @@ export const getOrgAdapter = (
 			organizationId: string;
 		}) => {
 			const invitation = await adapter.findMany<Invitation>({
-				model: "invitation",
+				model: context.tables.invitation.modelName,
 				where: [
 					{
 						field: "email",
@@ -447,7 +447,7 @@ export const getOrgAdapter = (
 			status: "accepted" | "canceled" | "rejected";
 		}) => {
 			const invitation = await adapter.update<Invitation>({
-				model: "invitation",
+				model: context.tables.invitation.modelName,
 				where: [
 					{
 						field: "id",
